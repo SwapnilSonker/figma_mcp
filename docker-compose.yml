@@ -1,0 +1,48 @@
+# version: '3.8'
+
+# services:
+#   mcp-server:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     ports:
+#       - "3000:3000"
+#     environment:
+#       - NODE_ENV=development
+#     env_file:
+#       - .env
+#     volumes:
+#       - .:/app
+#       - /app/node_modules
+#       - /app/dist
+#     restart: unless-stopped
+#     networks:
+#       - mcp-network
+
+# networks:
+#   mcp-network:
+#     driver: bridge
+version: '3.8'
+
+services:
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge
