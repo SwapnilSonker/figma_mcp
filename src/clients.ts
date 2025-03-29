@@ -70,29 +70,53 @@ class MCPClient {
         return match ? match[1] : undefined;
     }
 
+    extractDepth(figmaUrl: string): number | undefined {
+        // Look for the last number after a hyphen in the URL
+        const match = figmaUrl.match(/-(\d+)(?=[^-]*$)/);
+        if (match) {
+            const depth = parseInt(match[1], 10);
+            // Validate that depth is a reasonable number (1-10)
+            if (depth >= 1 && depth <= 10) {
+                return depth;
+            }
+        }
+        // Default depth if not found or invalid
+        return undefined;
+    }
+
     async convertFigmaDesign(figmaUrl: string) {
         try {
             console.log(`Converting Figma URL: ${figmaUrl}`);
             
             const fileKey = this.extractFileKey(figmaUrl);
             const nodeId = this.extractNodeId(figmaUrl);
-            console.log(`File key: ${fileKey}, Node ID: ${nodeId}`);
+            const depth = this.extractDepth(figmaUrl);
+            
+            console.log(`File key: ${fileKey}, Node ID: ${nodeId}, Depth: ${depth}`);
             
             // Call the get_figma_data tool
+            const toolArgs = {
+                fileKey,
+                ...(nodeId ? { nodeId } : {}),
+                ...(depth ? { depth } : {})
+            };
+            console.log("Calling get_figma_data with arguments:", toolArgs);
+            
             const result = await this.mcp.callTool({
                 name: "get_figma_data",
-                arguments: {
-                    fileKey,
-                    ...(nodeId ? { nodeId } : {})
-                }
+                arguments: toolArgs
             });
             
             return result;
         } catch (error) {
             if (error instanceof Error) {
-                console.error("Error converting Figma design:", error.message);
+                console.error("Error converting Figma design:", {
+                    message: error.message,
+                    name: error.name,
+                    stack: error.stack
+                });
             } else {
-                console.error("Error converting Figma design:", error);
+                console.error("Error converting Figma design (non-Error object):", error);
             }
             throw error;
         }
