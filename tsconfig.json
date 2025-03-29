@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "checkJs": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
 
     /* EMIT RULES */
     "outDir": "./dist",
